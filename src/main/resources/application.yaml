@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: steam
+  datasource:
+    driverClassName: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/steam
+    username: user
+    password: user
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
