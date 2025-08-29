@@ -1,7 +1,7 @@
 package com.steam.service.item;
 
-import com.steam.controller.item.dto.ItemsRequest;
-import com.steam.controller.item.dto.ItemsResponse;
+import com.steam.controller.item.dto.ItemsUpdateRequest;
+import com.steam.controller.item.dto.ItemsGetResponse;
 import com.steam.domain.entity.Item;
 import com.steam.domain.entity.User;
 import com.steam.domain.repository.ItemRepository;
@@ -23,23 +23,23 @@ public class ItemService {
     private final UserService userService;
     private final UserRepository userRepository;
 
-    public void updateUserItems(ItemsRequest itemsRequest, String steamId) {
+    public void updateUserItems(ItemsUpdateRequest itemsUpdateRequest, String steamId) {
         var user = userService.getUserBySteamId(steamId);
 
-        for (var itemRequest : itemsRequest.getItems()) {
-            var descriptions = itemRequest.getDescriptions()
+        for (var itemUpdateRequest : itemsUpdateRequest.getItems()) {
+            var descriptions = itemUpdateRequest.getDescriptions()
                     .stream()
                     .map(DescriptionMapper::toDescription)
                     .toList();
 
-            if (!checkExistUserItemByClassId(itemRequest.getClassId(), user)) {
+            if (!checkExistUserItemByClassId(itemUpdateRequest.getClassId(), user)) {
                 var item = new Item()
                         .setUser(user)
-                        .setClassId(itemRequest.getClassId())
-                        .setName(itemRequest.getName())
-                        .setInstanceId(itemRequest.getInstanceId())
-                        .setIconUrl(itemRequest.getIconUrl())
-                        .setMarketName(itemRequest.getMarketName())
+                        .setClassId(itemUpdateRequest.getClassId())
+                        .setName(itemUpdateRequest.getName())
+                        .setInstanceId(itemUpdateRequest.getInstanceId())
+                        .setIconUrl(itemUpdateRequest.getIconUrl())
+                        .setMarketName(itemUpdateRequest.getMarketName())
                         .setDescriptions(descriptions);
 
                 user.getItems().add(item);
@@ -49,12 +49,12 @@ public class ItemService {
         userRepository.save(user);
     }
 
-    public ItemsResponse getAllUserItems(String steamId) {
+    public ItemsGetResponse getAllUserItems(String steamId) {
         var userItems = userService.getUserBySteamId(steamId).getItems();
-        return new ItemsResponse()
+        return new ItemsGetResponse()
                 .setItems(userItems
                         .stream()
-                        .map(ItemMapper::toItemResponse)
+                        .map(ItemMapper::toItemGetResponse)
                         .toList());
     }
 

@@ -1,7 +1,6 @@
 package com.steam.controller.user;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.steam.controller.item.dto.ItemsResponse;
+import com.steam.controller.item.dto.ItemsGetResponse;
 import com.steam.service.item.ItemService;
 import com.steam.service.steam.SteamService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/inventory")
+@RequestMapping("/user-cab/inventory")
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -26,7 +25,7 @@ public class UserController {
 
     @Operation(summary = "Получение предметов пользователя по стим идентификатору")
     @GetMapping("/{steamId}")
-    public ItemsResponse getInventory(@PathVariable String steamId) {
+    public ItemsGetResponse getInventory(@PathVariable String steamId) {
         return itemService.getAllUserItems(steamId);
     }
 

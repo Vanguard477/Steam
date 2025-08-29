@@ -1,7 +1,7 @@
 package com.steam.service.description.mapper;
 
-import com.steam.controller.description.dto.DescriptionRequest;
-import com.steam.controller.description.dto.DescriptionResponse;
+import com.steam.controller.description.dto.DescriptionGetResponse;
+import com.steam.controller.description.dto.DescriptionUpdateRequest;
 import com.steam.domain.entity.Description;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -9,17 +9,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DescriptionMapper {
 
-    public static DescriptionResponse toDescriptionResponse(Description description) {
-        return new DescriptionResponse()
+    public static DescriptionGetResponse toDescriptionGetResponse(Description description) {
+        return new DescriptionGetResponse()
                 .setName(description.getName())
                 .setType(description.getType())
                 .setValue(description.getValue());
     }
 
-    public static Description toDescription(DescriptionRequest descriptionRequest) {
+    public static Description toDescription(DescriptionUpdateRequest descriptionUpdateRequestRequest) {
         return new Description()
-                .setName(descriptionRequest.getName())
-                .setType(descriptionRequest.getType())
-                .setValue(descriptionRequest.getValue());
+                .setName(descriptionUpdateRequestRequest.getName())
+                .setType(descriptionUpdateRequestRequest.getType())
+                .setValue(descriptionUpdateRequestRequest.getValue());
     }
 }
