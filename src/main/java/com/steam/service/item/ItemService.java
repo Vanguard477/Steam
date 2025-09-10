@@ -1,18 +1,22 @@
 package com.steam.service.item;
 
-import com.steam.controller.item.dto.ItemsUpdateRequest;
-import com.steam.controller.item.dto.ItemsGetResponse;
+import com.steam.controller.item.dto.UpdateItemsRequest;
+import com.steam.controller.item.dto.GetInventoryItemsResponse;
 import com.steam.domain.entity.Item;
 import com.steam.domain.entity.User;
 import com.steam.domain.repository.ItemRepository;
 import com.steam.domain.repository.UserRepository;
 import com.steam.service.description.mapper.DescriptionMapper;
 import com.steam.service.item.mapper.ItemMapper;
+import com.steam.service.price.PriceService;
+import com.steam.service.rest.ApiSendItem;
 import com.steam.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -22,11 +26,13 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final PriceService priceService;
+    private final ApiSendItem apiSendItem;
 
-    public void updateUserItems(ItemsUpdateRequest itemsUpdateRequest, String steamId) {
+    public void updateUserItems(UpdateItemsRequest updateItemsRequest, String steamId) {
         var user = userService.getUserBySteamId(steamId);
 
-        for (var itemUpdateRequest : itemsUpdateRequest.getItems()) {
+        for (var itemUpdateRequest : updateItemsRequest.getItems()) {
             var descriptions = itemUpdateRequest.getDescriptions()
                     .stream()
                     .map(DescriptionMapper::toDescription)
@@ -49,9 +55,9 @@ public class ItemService {
         userRepository.save(user);
     }
 
-    public ItemsGetResponse getAllUserItems(String steamId) {
+    public GetInventoryItemsResponse getAllUserItems(String steamId) {
         var userItems = userService.getUserBySteamId(steamId).getItems();
-        return new ItemsGetResponse()
+        return new GetInventoryItemsResponse()
                 .setItems(userItems
                         .stream()
                         .map(ItemMapper::toItemGetResponse)
@@ -63,5 +69,15 @@ public class ItemService {
                 .anyMatch(item -> classId.equals(item.getClassId()));
     }
 
+    public void sendItemInMarketByRest(String classId, BigDecimal price, User user) {
+            var item = getItemUserByClassId(classId, user);
+            var finalPrice = priceService.getFinalPrice(price);
+           apiSendItem.sendItemInMarket(ItemMapper.toItemSendResponse(item, finalPrice));
+    }
+
+    private Item getItemUserByClassId(String classId, User user) {
+        return itemRepository.findItemByUserAndClassId(user, classId)
+                .orElseThrow(()-> new RuntimeException("Не удалось найти предмет под идентификатору: " + classId + " у пользователя: " + user.getSteamId()));
+    }
 
 }

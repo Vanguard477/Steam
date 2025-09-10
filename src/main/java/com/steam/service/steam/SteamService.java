@@ -1,6 +1,6 @@
 package com.steam.service.steam;
 
-import com.steam.controller.item.dto.ItemsUpdateRequest;
+import com.steam.controller.item.dto.UpdateItemsRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import lombok.extern.slf4j.Slf4j;
@@ -14,13 +14,13 @@ import org.springframework.web.client.RestTemplate;
 public class SteamService {
     private static final String STEAM_API_URL = "https://steamcommunity.com";
 
-    public ItemsUpdateRequest getItemsRequestBySteamId(String steamId) {
-        RestTemplate restTemplate = new RestTemplate();
+    public UpdateItemsRequest getItemsRequestBySteamId(String steamId) {
+        var restTemplate = new RestTemplate();
         String url = STEAM_API_URL +
                 "/inventory/" + steamId +
                 "/730/2";
 
-        return restTemplate.getForObject(url, ItemsUpdateRequest.class);
+        return restTemplate.getForObject(url, UpdateItemsRequest.class);
     }
 
 }
